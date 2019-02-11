@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Bloggit!</h1>
+    <form method='POST'>
+        <label for="titlename">Title your blog: </label>
+        <br>
+        <label>
+            <input name="titlename" type="text" />
+        </label>
+        <span class="error">{{title_error}}</span>
+        <br>
+        <label for="contribution">Tell us about it!: </label>
+        <br>
+        <textarea name="contribution" rows="4" cols="50"></textarea>
+        <span class="error">{{contribution_error}}</span>
+        <br>
+        <input type="submit" value="What's on your mind?"/>
+    </form>
+{% endblock %}
