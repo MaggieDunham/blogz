@@ -6,7 +6,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:blog@localhost:8889/build-a-blog'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-
+app.secret_key = 'lostgirl'
 
 class Blog(db.Model):
 
@@ -19,9 +19,13 @@ class Blog(db.Model):
         self.title = title
         self.body = body
 
+@app.route('/', methods=['POST', 'GET'])
+def redirect_to_blog():
+    return redirect('/blog')
 
-@app.route('/add-new-post', methods=['POST', 'GET'])
-def add_new_post():
+
+@app.route('/addnewpost', methods=['POST', 'GET'])
+def addnewpost():
 
     if request.method == 'POST':
         title_name = request.form['titlename']
@@ -34,13 +38,13 @@ def add_new_post():
 
         if post_name == '':
             contribution_error = "Please make a blog"
-            return render_template('add-new-post.html', title_error=title_error, contribution_error=contribution_error)
+            return render_template('addnewpost.html', title_error=title_error, contribution_error=contribution_error)
         else:    
             db.session.add(new_blog)
             db.session.commit()
             return redirect('/blog?id={0}'.format(new_blog.id))
 
-    return render_template('add-new-post.html')
+    return render_template('addnewpost.html')
 
 
 @app.route('/blog', methods=['GET'])
