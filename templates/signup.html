@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="/signup" method='POST'>
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <lable for="username">Username</lable>
+                </td>
+                <td>
+                    <input name="username" type= "text" value="{{username}}"/>
+                    <span class="error">{{username_error}}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="password">Password</label>
+                </td>
+                <td>
+                    <input name="password" type="password"/>
+                    <span class="error">{{password_error}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <label for="verify">Verify Password</label>
+                </td>
+                <td>
+                    <input name="verify" type="password"/>
+                    <span class="error">{{verify_password_error}}</span>
+                </td>
+              </tr>
+              <tr>
+                  <td>
+                      <label for="email">Email (optional)</label>
+                  </td>
+                  <td>
+                      <input name="email" value="{{email}}"/>
+                      <span class="error">{{email_error}}</span>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+  <input type="submit" value="Blog In"/> 
+
+{% endblock %}

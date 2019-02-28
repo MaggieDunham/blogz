@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Blog Posts</h1>
+    {% for idx in range(blogs|length) %}
+        <h3><a href="blog?id={{blogs[idx].body}}">{{blogs[idx].title}}</a></h3>
+        <p>{{blog.body}}</p>
+        <p>Written by <a href="blog?user={{blogs[idx].owner.id}}">{{blogs[idx].owner.username}}</a></p>
+    {% endfor %}
+
+{% endblock %}
