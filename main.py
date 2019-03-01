@@ -26,7 +26,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20))
     password = db.Column(db.String(20))
-    blogs = db.Column(db.String(1200))
+    blogs = db.relationship('Blog', backref= 'owner')
    
 
     def __init__(self, username, password):
@@ -68,13 +68,17 @@ def index():
 def blog():
 
     blogpost = request.args.get('id')
-    if blogpost is not None:
-        blogs = Blog.query.filter_by(id=blogpost)
-        return render_template('addnewpost.html', blogs=blogs)
+    if request.args.get('id'):
+        id = request.args.get('id')
+        blog = Blog.query.get(id)
+        return render_template('singleblog.html', blog=blog)
 
     elif request.args.get('user'):
-        userID = request.args.get('user')
-        blogs = Blog.query.filter_by(owner_id=userId).all()
+        username = request.args.get('user')
+        owner = User.query.filter_by(username=username).first()
+        ## owner = get the user by querying the db
+
+        blogs = Blog.query.filter_by(owner_id = owner.id).all()
         return render_template('singleuser.html', blogs=blogs)
 
     else:
@@ -121,24 +125,25 @@ def email_period_plus_one(x):
 
 @app.route("/signup", methods = ['POST', 'GET'])
 def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        verify = request.form['verify']
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         verify = request.form['verify']
         
-        #validate user's data
-        existing_user = User.query.filter_by(username=username).first()
-        if not existing_user:
-            new_user = User(username, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = username
-            return redirect('/addnewpost')
-        else:
-            # flash message you already exist
-            return "<h1>Duplicate user</h1>"
+#         #validate user's data
+#         existing_user = User.query.filter_by(username=username).first()
+#         if not existing_user:
+#             new_user = User(username, password)
+#             db.session.add(new_user)
+#             db.session.commit()
+#             session['username'] = username
+#             return redirect('/addnewpost')
+#         else:
+#             # flash message you already exist
+#             return "<h1>Duplicate user</h1>"
 
-    return render_template('signup.html')
+    if request.method == 'GET':
+        return render_template('signup.html')
 
 
 #this creates varibles from the inputs
@@ -250,8 +255,8 @@ def signup():
         new_user= User(username, password)
         db.session.add(new_user)
         db.session.commit()
-        session['user']=new_user.id
-        return redirect('/blog')
+        session['user']=new_user.username
+        return redirect('/addnewpost')
     else:
         return render_template('signup.html', username_error=username_error, username=username, 
         password_error=password_error, password=password, verify_password_error=verify_password_error,
@@ -267,7 +272,7 @@ def require_login():
 
 @app.route('/login', methods=['POST','GET'])
 def login():
-
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -275,11 +280,18 @@ def login():
         if user and user.password == password:
             session['user'] = user.username 
             return redirect('/addnewpost')          
+        
         username_error=''
+        password_error=''
          # add session
         if not user:
             username_error="Incorrect Username"
-        return render_template('login.html', username_error=username_error)
+        else:
+            if user.password != password:
+                password_error="Incorrect password"
+
+
+        return render_template('login.html', username_error=username_error, password_error=password_error)
         #flash error
 
     return render_template('login.html')
